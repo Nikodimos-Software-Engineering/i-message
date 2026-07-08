@@ -21,9 +21,9 @@ app.get("/health", (req, res) => {
 
 if(fs.existsSync(publicDir)){
     app.use(express.static(publicDir))
-    app.get("/{*any}", (req, res, next) => {
-        res.sendFile(path.join(publicDir, "index.html"), (err) => next(err));
-    });
+    app.get("*", (req, res, next) => {
+    res.sendFile(path.join(publicDir, "index.html"), (err) => next(err));
+});
 }
 
 app.listen(PORT, () => {
