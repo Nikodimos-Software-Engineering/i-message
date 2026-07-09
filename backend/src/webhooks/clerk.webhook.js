@@ -1,27 +1,12 @@
 import express from "express"
 import User from "../models/User.js"
 import { verifyWebhook } from "@clerk/express/webhooks"
-import e from "express";
-
 
 const router = express.Router();
 
 router.post("/", async (req, res) => {
     try {
-        const signingSecret = process.env.CLERK_WEBHOOK_SIGNING_SECRET;
-        if(!signingSecret){
-            res.status(503).json({message: "Webhook secret is not provided"});
-            return;
-        }
-
-        const payload = Buffer.isBuffer(req.body) ? req.body.toString("utf8") : String(req.body);
-        const request = new Request("http://internal/webhooks/clerk", {
-            method: "POST",
-            headers: new Headers(req.headers),
-            body: payload
-        });
-
-        const evt = await verifyWebhook(request, { signingSecret });
+        const evt = await verifyWebhook(req);
 
         if (evt.type === "user.created" || evt.type === "user.updated"){
             const u = evt.data;
@@ -43,7 +28,7 @@ router.post("/", async (req, res) => {
         res.status(200).json({received: true});
     } catch (error) {
         console.error("Error in Clerk Webhook: ", error);
-        res.status(400).json({message: "Webhook verfication failed"});
+        res.status(400).json({message: "Webhook verification failed"});
     }
 });
 
