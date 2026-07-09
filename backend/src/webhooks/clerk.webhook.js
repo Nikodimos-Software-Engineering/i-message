@@ -1,5 +1,5 @@
 import express from "express"
-import { User } from "../models/User.js"
+import User from "../models/User.js"
 import { verifyWebhook } from "@clerk/express/webhooks"
 import e from "express";
 
@@ -42,7 +42,8 @@ router.post("/", async (req, res) => {
 
         res.status(200).json({received: true});
     } catch (error) {
-        
+        console.error("Error in Clerk Webhook: ", error);
+        res.status(400).json({message: "Webhook verfication failed"});
     }
 });
 
